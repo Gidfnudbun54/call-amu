@@ -74,5 +74,29 @@ async function startCamera() {
   }
 }
 </script>
+  <h2>আমার ক্যামেরা পরীক্ষা</h2>
+
+<video id="myVideo" autoplay playsinline muted
+    style="width:300px;max-width:100%;background:black;"> </video>
+
+<br><br>
+
+<button onclick="startCamera()">ক্যামেরা চালু করো</button>
+
+<script>
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+
+    document.getElementById("myVideo").srcObject = stream;
+  } catch (error) {
+    alert("ক্যামেরা চালু হয়নি: " + error.message);
+  }
+}
+</script>
+
 </body>
 </html>
