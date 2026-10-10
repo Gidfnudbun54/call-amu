@@ -1,120 +1,224 @@
-html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Call Amu</title>
+    <title>Call Amu</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f0f7ff;
-      padding: 30px 15px;
-      margin: 0;
-    }
+    <script src="https://meet.jit.si/external_api.js"></script>
 
-    h1 {
-      color: #174ea6;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 25px 12px;
+        }
 
-    p {
-      font-size: 18px;
-    }
+        h1 {
+            color: #174ea6;
+        }
 
-    button {
-      background: #16803c;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 15px 25px;
-      font-size: 20px;
-      cursor: pointer;
-      margin: 10px;
-    }
+        p {
+            color: #444;
+        }
 
-    button:hover {
-      background: #11652f;
-    }
+        button {
+            padding: 13px 22px;
+            margin: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    video {
-      width: 320px;
-      max-width: 100%;
-      background: black;
-      border-radius: 12px;
-      margin-top: 15px;
-    }
+        #callButton {
+            background: #16803c;
+            color: white;
+        }
 
-    #status {
-      margin-top: 20px;
-      color: #174ea6;
-    }
-  </style>
+        #cameraButton {
+            background: #174ea6;
+            color: white;
+        }
+
+        #stopButton {
+            background: #b42318;
+            color: white;
+        }
+
+        #status {
+            margin: 15px;
+            font-weight: bold;
+        }
+
+        #jitsi-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+
+        #myVideo {
+            width: 100%;
+            max-width: 500px;
+            background: #222;
+            border-radius: 10px;
+        }
+
+        .section {
+            background: white;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px 10px;
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 
 <body>
-  <h1>Call Amu ❤️</h1>
 
-  <p>Click the button below to talk to your mother.</p>
+    <h1>Call Amu ❤️</h1>
 
-  <button onclick="startCall()">📹 Call Amu</button>
+    <p>Click the button below to start a video call.</p>
 
-  <p id="status">Ready to call</p>
+    <button id="callButton" onclick="startCall()">
+        📹 Call Amu
+    </button>
 
-  <hr>
+    <p id="status">Ready to start your call.</p>
 
-  <h2>Camera Test</h2>
+    <div id="jitsi-container"></div>
 
-  <p>Test your camera and microphone before making a call.</p>
+    <div class="section">
 
-  <video id="myVideo" autoplay playsinline muted></video>
+        <h2>Camera Test</h2>
 
-  <br>
+        <p>Check whether your laptop camera and microphone are working.</p>
 
-  <button onclick="startCamera()">Turn On Camera</button>
+        <button id="cameraButton" onclick="startCamera()">
+            Turn On Camera
+        </button>
 
-  <button onclick="stopCamera()">Turn Off Camera</button>
+        <button id="stopButton" onclick="stopCamera()">
+            Turn Off Camera
+        </button>
 
-  <script>
-    let cameraStream = null;
+        <br><br>
 
-    function startCall() {
-      document.getElementById("status").textContent =
-        "Video calling is not connected yet.";
-    }
+        <video id="myVideo" autoplay playsinline muted></video>
 
-    async function startCamera() {
-      try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
+        <p id="cameraStatus">Camera is off.</p>
 
-        document.getElementById("myVideo").srcObject = cameraStream;
+    </div>
 
-        document.getElementById("status").textContent =
-          "Camera and microphone are on.";
-      } catch (error) {
-        document.getElementById("status").textContent =
-          "Camera could not start. Please check your browser permissions.";
+    <script>
+        let jitsiApi = null;
+        let cameraStream = null;
 
-        alert("Error: " + error.message);
-      }
-    }
+        function startCall() {
+            const status = document.getElementById("status");
+            const container = document.getElementById("jitsi-container");
 
-    function stopCamera() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-      }
+            if (jitsiApi) {
+                status.textContent = "The video call is already open.";
+                return;
+            }
 
-      document.getElementById("myVideo").srcObject = null;
+            if (typeof JitsiMeetExternalAPI === "undefined") {
+                status.textContent =
+                    "Video call could not load. Please refresh the page.";
+                return;
+            }
 
-      document.getElementById("status").textContent =
-        "Camera is off.";
-    }
-  </script>
+            stopCamera();
+
+            status.textContent = "Loading video call...";
+
+            container.innerHTML = "";
+
+            try {
+                jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
+                    roomName: "Call-Amu-Shakil-2026",
+                    parentNode: container,
+                    width: "100%",
+                    height: 600
+                });
+
+                status.textContent =
+                    "Video call opened. Join the meeting when ready.";
+
+                jitsiApi.addListener("videoConferenceJoined", function () {
+                    status.textContent = "You have joined the video call.";
+                });
+
+                jitsiApi.addListener("videoConferenceLeft", function () {
+                    status.textContent = "You left the video call.";
+                });
+
+                jitsiApi.addListener("readyToClose", function () {
+                    jitsiApi = null;
+                    container.innerHTML = "";
+                    status.textContent = "Call ended.";
+                });
+
+            } catch (error) {
+                status.textContent =
+                    "Could not start the call. Please try again.";
+                console.error(error);
+            }
+        }
+
+        async function startCamera() {
+            const video = document.getElementById("myVideo");
+            const cameraStatus = document.getElementById("cameraStatus");
+
+            try {
+                if (!navigator.mediaDevices ||
+                    !navigator.mediaDevices.getUserMedia) {
+                    cameraStatus.textContent =
+                        "Camera is not supported in this browser.";
+                    return;
+                }
+
+                cameraStream =
+                    await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+
+                video.srcObject = cameraStream;
+
+                cameraStatus.textContent =
+                    "Camera and microphone are working.";
+
+            } catch (error) {
+                cameraStatus.textContent =
+                    "Camera access failed. Please check permissions.";
+
+                console.error(error);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(function (track) {
+                    track.stop();
+                });
+
+                cameraStream = null;
+            }
+
+            const video = document.getElementById("myVideo");
+
+            video.srcObject = null;
+
+            document.getElementById("cameraStatus").textContent =
+                "Camera is off.";
+        }
+    </script>
+
 </body>
 </html>
