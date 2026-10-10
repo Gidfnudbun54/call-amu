@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Amu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f7ff;
+      padding: 50px 15px;
+    }
+
+```
+h1 {
+  color: #174ea6;
+}
+
+button {
+  background: #16803c;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 35px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+#status {
+  margin-top: 20px;
+  font-size: 18px;
+}
+```
+
+  </style>
+</head>
+<body>
+  <h1>আম্মুকে ভিডিও কল</h1>
+  <p>আম্মুর সঙ্গে কথা বলতে নিচের বাটনে চাপো।</p>
+
+<button onclick="startCall()">📹 Call Amu</button>
+
+  <p id="status">কল করার জন্য প্রস্তুত</p>
+
+  <script>
+    function startCall() {
+      document.getElementById("status").textContent =
+        "আমাদের ভিডিও কল ব্যবস্থা তৈরি হচ্ছে!";
+    }
+  </script>
+<h2>আমার ক্যামেরা পরীক্ষা</h2>
+
+<video id="myVideo" autoplay playsinline muted
+       style="width:300px;max-width:100%;background:black;">
+</video>
+
+<br><br>
+
+<button onclick="startCamera()">ক্যামেরা চালু করো</button>
+
+<script>
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+
+    document.getElementById("myVideo").srcObject = stream;
+  } catch (error) {
+    alert("ক্যামেরা চালু হয়নি: " + error.message);
+  }
+}
+</script>
+</body>
+</html>
