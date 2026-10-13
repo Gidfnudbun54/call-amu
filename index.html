@@ -1,224 +1,122 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Call Amu</title>
-
-    <script src="https://meet.jit.si/external_api.js"></script>
+    <title>Call Amu ❤️</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 25px;
+            border-radius: 25px;
             text-align: center;
-            background: #f2f6fc;
-            margin: 0;
-            padding: 25px 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .heart {
+            font-size: 65px;
+            margin-bottom: 10px;
         }
 
         h1 {
-            color: #174ea6;
+            color: #218838;
+            font-size: 32px;
+            margin-bottom: 15px;
         }
 
-        p {
-            color: #444;
+        .message {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
         }
 
-        button {
-            padding: 13px 22px;
-            margin: 8px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        #callButton {
-            background: #16803c;
+        .call-button {
+            display: block;
+            width: 100%;
+            padding: 18px 15px;
+            background: #28a745;
             color: white;
-        }
-
-        #cameraButton {
-            background: #174ea6;
-            color: white;
-        }
-
-        #stopButton {
-            background: #b42318;
-            color: white;
-        }
-
-        #status {
-            margin: 15px;
+            font-size: 21px;
             font-weight: bold;
+            text-decoration: none;
+            border-radius: 15px;
+            transition: 0.3s;
         }
 
-        #jitsi-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 20px auto;
+        .call-button:hover {
+            background: #218838;
+            transform: scale(1.03);
         }
 
-        #myVideo {
-            width: 100%;
-            max-width: 500px;
-            background: #222;
-            border-radius: 10px;
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+            line-height: 1.7;
         }
 
-        .section {
-            background: white;
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px 10px;
-            border-radius: 12px;
-            box-sizing: border-box;
+        .footer {
+            margin-top: 25px;
+            color: #888;
+            font-size: 13px;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>Call Amu ❤️</h1>
+    <div class="container">
 
-    <p>Click the button below to start a video call.</p>
+        <div class="heart">❤️</div>
 
-    <button id="callButton" onclick="startCall()">
-        📹 Call Amu
-    </button>
+        <h1>Call Amu</h1>
 
-    <p id="status">Ready to start your call.</p>
+        <p class="message">
+            আম্মু, তোমার সঙ্গে কথা বলতে চাই! 🥰<br>
+            নিচের সবুজ বাটনে চাপ দাও।
+        </p>
 
-    <div id="jitsi-container"></div>
+        <a
+            class="call-button"
+            href="https://meet.google.com/akz-egaj-upt"
+            target="_blank"
+            rel="noopener noreferrer">
+            📹 ভিডিও কল করো
+        </a>
 
-    <div class="section">
+        <p class="note">
+            💚 বাটনে চাপ দিলে ভিডিও কল চালু করার পেজ খুলবে।<br>
+            ক্যামেরা ও মাইক্রোফোনের অনুমতি দাও।
+        </p>
 
-        <h2>Camera Test</h2>
-
-        <p>Check whether your laptop camera and microphone are working.</p>
-
-        <button id="cameraButton" onclick="startCamera()">
-            Turn On Camera
-        </button>
-
-        <button id="stopButton" onclick="stopCamera()">
-            Turn Off Camera
-        </button>
-
-        <br><br>
-
-        <video id="myVideo" autoplay playsinline muted></video>
-
-        <p id="cameraStatus">Camera is off.</p>
+        <div class="footer">
+            Made with ❤️ for Amu
+        </div>
 
     </div>
 
-    <script>
-        let jitsiApi = null;
-        let cameraStream = null;
-
-        function startCall() {
-            const status = document.getElementById("status");
-            const container = document.getElementById("jitsi-container");
-
-            if (jitsiApi) {
-                status.textContent = "The video call is already open.";
-                return;
-            }
-
-            if (typeof JitsiMeetExternalAPI === "undefined") {
-                status.textContent =
-                    "Video call could not load. Please refresh the page.";
-                return;
-            }
-
-            stopCamera();
-
-            status.textContent = "Loading video call...";
-
-            container.innerHTML = "";
-
-            try {
-                jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", {
-                    roomName: "Call-Amu-Shakil-2026",
-                    parentNode: container,
-                    width: "100%",
-                    height: 600
-                });
-
-                status.textContent =
-                    "Video call opened. Join the meeting when ready.";
-
-                jitsiApi.addListener("videoConferenceJoined", function () {
-                    status.textContent = "You have joined the video call.";
-                });
-
-                jitsiApi.addListener("videoConferenceLeft", function () {
-                    status.textContent = "You left the video call.";
-                });
-
-                jitsiApi.addListener("readyToClose", function () {
-                    jitsiApi = null;
-                    container.innerHTML = "";
-                    status.textContent = "Call ended.";
-                });
-
-            } catch (error) {
-                status.textContent =
-                    "Could not start the call. Please try again.";
-                console.error(error);
-            }
-        }
-
-        async function startCamera() {
-            const video = document.getElementById("myVideo");
-            const cameraStatus = document.getElementById("cameraStatus");
-
-            try {
-                if (!navigator.mediaDevices ||
-                    !navigator.mediaDevices.getUserMedia) {
-                    cameraStatus.textContent =
-                        "Camera is not supported in this browser.";
-                    return;
-                }
-
-                cameraStream =
-                    await navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: true
-                    });
-
-                video.srcObject = cameraStream;
-
-                cameraStatus.textContent =
-                    "Camera and microphone are working.";
-
-            } catch (error) {
-                cameraStatus.textContent =
-                    "Camera access failed. Please check permissions.";
-
-                console.error(error);
-            }
-        }
-
-        function stopCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-
-                cameraStream = null;
-            }
-
-            const video = document.getElementById("myVideo");
-
-            video.srcObject = null;
-
-            document.getElementById("cameraStatus").textContent =
-                "Camera is off.";
-        }
-    </script>
-
 </body>
 </html>
+```
